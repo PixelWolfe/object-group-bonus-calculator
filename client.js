@@ -1,3 +1,7 @@
+
+$(document).ready(start);
+
+
 const employees = [
   {
     name: 'Atticus',
@@ -40,4 +44,76 @@ const employees = [
 // This is not a race. Everyone on your team should understand what is happening.
 // Ask questions when you don't.
 
-console.log( employees );
+console.log(employees);
+
+
+
+function showAllBonuses() {
+  for(employeeObj of employees){
+    console.log('Employee information:', employeeObj);
+    console.log('Employee bonus statistics:',updateEmployee(employeeObj));
+  }
+}
+
+
+function updateEmployee(employeeObj){
+  
+  //destructure contents of employeeObj into another object 
+  //without destructuring original Object will just change its' name, hence being permanantly altered.
+  let employee = {...employeeObj};
+
+  //convert number strings into numbers
+  employee.employeeNumber = Number(employee.employeeNumber);
+  employee.annualSalary = Number(employee.annualSalary);
+
+  //base bonusPercentage begins at 0%
+  employee.bonusPercentage = 0;
+
+   //company experience based bonusPercentage addition
+  if((String(employee.employeeNumber)).length === 4){
+    employee.bonusPercentage += 5;
+  } 
+  //if annualSalary is above 65k 
+  if(employee.annualSalary > 65000){
+    employee.bonusPercentage -= 1;
+  }
+
+  //reviewRating based bonusPercentage addition
+  if(employee.reviewRating <= 2){
+    //ratings 2 and below are not eligible for bonuses
+    employee.bonusPercentage = 0;
+  }
+  else if(employee.reviewRating===3){
+      employee.bonusPercentage += 4;
+  }
+  else if(employee.reviewRating===4){
+    employee.bonusPercentage += 6;
+  }
+  else if(employee.reviewRating === 5){
+    employee.bonusPercentage += 10;
+  }
+
+  //No bonusPercentage above max of 13%
+  if(employee.bonusPercentage > 13){
+    employee.bonusPercentage = 13;
+  }
+  //No bonusPercentage below min of 0%
+  else if(employee.bonusPercentage <= 0){
+    employee.bonusPercentage = 0;
+  }
+  //calculate total bonus rounded to the nearest dollar
+  employee.totalBonus = Math.round(employee.annualSalary * (employee.bonusPercentage/100));
+  //calculate total compensation
+  employee.totalCompensation = employee.totalBonus + employee.annualSalary;
+  //remove unwanted properties now that calculations are complete
+  delete employee.annualSalary;
+  delete employee.employeeNumber;
+  delete employee.reviewRating;
+  //return employee object which has property information about employee bonuses
+  return employee;
+}
+
+function start(){
+  $('#bonus-button').on('click', showAllBonuses);
+}
+
